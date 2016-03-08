@@ -16,23 +16,23 @@ public class SocketChannelTest {
 
 	public static void main(String[] args) throws UnknownHostException, IOException{
 		serverSock = new ServerSocket(8000);
+		java.net.Socket sock = serverSock.accept();
+		SocketChannel channel = sock.getChannel();
+		channel.configureBlocking(true);
+		
+		Selector selector = Selector.open();  
+		SelectionKey key = channel.register(selector,  
+				SelectionKey.OP_READ);
+		key.selector();
+		
 		while(true){
-			java.net.Socket sock = serverSock.accept();
-			SocketChannel channel = sock.getChannel();
-			channel.configureBlocking(true);
-			
-			Selector selector = Selector.open();  
-			SelectionKey key = channel.register(selector,  
-					SelectionKey.OP_READ);
-			key.selector();
-			
 			BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			OutputStreamWriter writer = new OutputStreamWriter(sock.getOutputStream());
+//			OutputStreamWriter writer = new OutputStreamWriter(sock.getOutputStream());
 			String s = null; 
 			while((s = reader.readLine())!=null){
 				System.out.println(s);
-				writer.write(s+"\n");
-				writer.flush();
+//				writer.write(s+"\n");
+//				writer.flush();
 			}
 		}
 		
