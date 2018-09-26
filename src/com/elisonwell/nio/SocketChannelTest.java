@@ -98,8 +98,8 @@ public class SocketChannelTest {
 		pool.execute(()->{
 			while (true){
 				try {
-					int select = selector.select();
-					System.out.println("已准备的channel数："+select);
+					//如果用select方法会阻塞
+					int select = selector.selectNow();
 					if(select==0){
 						continue;
 					}
@@ -110,7 +110,7 @@ public class SocketChannelTest {
 						ByteBuffer buffer = ByteBuffer.allocate(1024);
 						int count = socketChannel.read(buffer);
 						System.out.println("----------------------------------------");
-						System.out.println("读取字节数："+count);
+						System.out.println(new String(buffer.array()));
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
