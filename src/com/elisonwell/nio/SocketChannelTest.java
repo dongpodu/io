@@ -127,6 +127,7 @@ public class SocketChannelTest {
 			if(socketChannel!=null){
 				socketChannel.configureBlocking(false);
 				//由于selector阻塞在select方法上，需要wakeup后才能register成功，否则register会被阻塞
+				//https://stackoverflow.com/questions/1057224/java-thread-blocks-while-registering-channel-with-selector-while-select-is-cal
 				selector.wakeup();
 				socketChannel.register(selector,SelectionKey.OP_READ);
 				System.out.println("注册成功");
