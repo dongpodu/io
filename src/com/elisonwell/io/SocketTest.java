@@ -1,4 +1,4 @@
-package com.elisonwell.socket;
+package com.elisonwell.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
