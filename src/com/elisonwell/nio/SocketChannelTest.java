@@ -6,13 +6,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Arrays;
+import java.util.Iterator;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 public class SocketChannelTest {
@@ -28,7 +29,6 @@ public class SocketChannelTest {
 			accept方法阻塞，直到请求到达
 			 */
 			java.net.Socket sock = serverSock.accept();
-			sock.setKeepAlive(false);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			OutputStreamWriter writer = new OutputStreamWriter(sock.getOutputStream());
 			System.out.println("----------------------------");
@@ -90,9 +90,55 @@ public class SocketChannelTest {
 		}
 	}
 
+	public static void test3() throws IOException {
+
+		//开启单个线程处理任务
+		Selector selector = Selector.open();
+		Executor pool = Executors.newSingleThreadExecutor();
+		pool.execute(()->{
+			while (true){
+				try {
+					int select = selector.select();
+					System.out.println("已准备的channel数："+select);
+					if(select==0){
+						continue;
+					}
+					Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+					while (it.hasNext()){
+						SelectionKey key = it.next();
+						SocketChannel socketChannel = (SocketChannel)key.channel();
+						ByteBuffer buffer = ByteBuffer.allocate(1024);
+						int count = socketChannel.read(buffer);
+						System.out.println("----------------------------------------");
+						System.out.println("读取字节数："+count);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		//主线程监听端口
+		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+		serverSocketChannel.bind(new InetSocketAddress(8003));
+		serverSocketChannel.configureBlocking(false);
+		while (true){
+			SocketChannel socketChannel = serverSocketChannel.accept();
+			if(socketChannel!=null){
+				socketChannel.configureBlocking(false);
+				//由于selector阻塞在select方法上，需要wakeup后才能register成功，否则register会被阻塞
+				selector.wakeup();
+				socketChannel.register(selector,SelectionKey.OP_READ);
+				System.out.println("注册成功");
+			}
+		}
+	}
+
+
 	public static void main(String[] args) throws Exception{
-		test();
+//		test();
 //		test1();
 //		test2();
+		test3();
 	}
 }

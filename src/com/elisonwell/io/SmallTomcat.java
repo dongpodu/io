@@ -12,7 +12,8 @@ import java.util.concurrent.Executors;
 public class SmallTomcat {
 
     /**
-     * 主线程监听端口，收到请求后立马将获得的socket丢给工作线程出来，主线程继续返回监听端口
+     * 主线程监听端口，收到请求后立马将获得的socket丢给工作线程处理，主线程继续返回监听端口
+     * 这种模式缺点是：当并发很多时，开启的工作线程也会很多
      * @throws IOException
      */
     public static void test() throws IOException {
