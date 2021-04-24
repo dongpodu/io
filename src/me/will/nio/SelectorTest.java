@@ -1,4 +1,4 @@
-package com.elisonwell.nio;
+package me.will.nio;
 
 public class SelectorTest {
 

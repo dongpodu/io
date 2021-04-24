@@ -1,4 +1,4 @@
-package com.elisonwell.io.input;
+package me.will.io.input;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

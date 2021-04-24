@@ -1,4 +1,4 @@
-package com.elisonwell.io;
+package me.will.io;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;

@@ -1,4 +1,4 @@
-package com.elisonwell.nio;
+package me.will.nio;
 
 import java.io.*;
 import java.nio.ByteBuffer;
