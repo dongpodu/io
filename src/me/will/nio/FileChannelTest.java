@@ -16,7 +16,7 @@ public class FileChannelTest {
 	 * @throws Exception
 	 */
 	public static void testRead() throws Exception {
-		String path = "D:\\work\\test.jpg";
+		String path = "/Users/duyisong/Downloads/download.pdf";
 		/*
 		 * 不能用fileOutputStream，因为用fileOutputStream获取的channel调用read方法时，会报NonReadableChannelException
 		 */
