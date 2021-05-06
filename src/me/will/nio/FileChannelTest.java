@@ -8,7 +8,7 @@ import java.nio.channels.FileChannel;
 
 /**
  * http://www.ibm.com/developerworks/cn/education/java/j-nio/
- *
+ * http://ifeve.com/file-channel/
  * @author duyisong
  * @createAt 2016年6月3日
  */
@@ -70,7 +70,7 @@ public class FileChannelTest {
         /*
          * 不能用fileInputStream，因为用fileInputStream获取的channel调用write方法时，会报NonWritableChannelException
          */
-        FileOutputStream out = new FileOutputStream(new File("D:\\work\\test.txt"));
+        FileOutputStream out = new FileOutputStream(new File("/Users/bilibili/Downloads/test.txt"));
         FileChannel outChannel = out.getChannel();
         ByteBuffer buffer = ByteBuffer.allocate(84);
         buffer.clear();
