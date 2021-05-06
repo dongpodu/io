@@ -1,4 +1,4 @@
-package me.will.io.input;
+package me.will.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

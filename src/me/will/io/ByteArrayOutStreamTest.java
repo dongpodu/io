@@ -1,4 +1,4 @@
-package me.will.io.output;
+package me.will.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
