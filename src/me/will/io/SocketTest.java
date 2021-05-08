@@ -4,41 +4,36 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * socket测试
- * <p>
- * 详情请见：http://haohaoxuexi.iteye.com/blog/1979837
  *
  * @author duyisong
  * @createAt 2016年3月8日
  */
 public class SocketTest {
-    private static ServerSocket serverSock;
 
     /**
      * 只接受单个客户端
      *
      * @throws IOException
      */
-    public static void acceptSingleCustom() throws IOException {
-        serverSock = new ServerSocket(8000);
-        System.out.println("新建服务端socket");
-        //接受客户端socket请求，accept方法阻塞，直到接收到客户端socket才继续往下走
-        java.net.Socket sock = serverSock.accept();
-        System.out.println("接受客户端socket");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-        String s = null;
+    public static void acceptOneClient() throws IOException {
+        ServerSocket serverSock = new ServerSocket(8000);
+        //接受客户端连接请求，accept方法阻塞
+        java.net.Socket socket = serverSock.accept();
+        System.out.println(String.format("接受客户端%s连接", socket.getPort()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String s;
         //read方法也为阻塞方法，直到读取到数据才往下走
         //while保证了服务端一直在等待从客户端读取数据，只要服务端socket不关闭，
         //服务端一直在读取客户端socket发送过来的数据
         while ((s = reader.readLine()) != null) {
-            if (s.indexOf("eof") != -1) {//遇到eof时就结束接收
+            if (s.contains("eof")) {//遇到eof时就结束接收
                 System.out.println("退出");
                 break;
             }
-            System.out.println("接受客户端数据：" + s);
+            System.out.println(String.format("接受客户端%s数据：%s", socket.getPort(), s));
         }
     }
 
@@ -48,37 +43,35 @@ public class SocketTest {
      *
      * @throws IOException
      */
-    public static void acceptMutiplCustom() throws IOException {
-
-        serverSock = new ServerSocket(8000);
+    public static void acceptManyClient() throws IOException {
+        ServerSocket serverSock = new ServerSocket(8000);
         System.out.println("新建服务端socket");
         while (true) {
-            java.net.Socket sock = serverSock.accept();
-            System.out.println("接受客户端socket");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            String s = null;
+            java.net.Socket socket = serverSock.accept();
+            System.out.println(String.format("接受客户端%s连接", socket.getPort()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String s;
             while ((s = reader.readLine()) != null) {
-                if (s.indexOf("eof") != -1) {
+                if (s.contains("eof")) {
                     System.out.println("退出");
                     break;
                 }
-                System.out.println("接受客户端数据：" + s);
+                System.out.println(String.format("接受客户端%s数据：%s", socket.getPort(), s));
             }
         }
     }
 
     /**
-     * acceptMutiplCustom方法的改进
+     * acceptManyClient方法的改进
      *
      * @throws IOException
      */
-    public static void acceptMutiplCustom1() throws IOException {
-
-        serverSock = new ServerSocket(8000);
+    public static void acceptManyCustom1() throws IOException {
+        ServerSocket serverSock = new ServerSocket(8000);
         System.out.println("新建服务端socket");
         while (true) {
             java.net.Socket socket = serverSock.accept();
-            System.out.println("接受客户端socket");
+            System.out.println(String.format("接受客户端%s连接", socket.getPort()));
             new Thread(() -> {
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -88,7 +81,7 @@ public class SocketTest {
                             System.out.println("退出");
                             break;
                         }
-                        System.out.println("接受客户端数据：" + s);
+                        System.out.println(String.format("接受客户端%s数据：%s", socket.getPort(), s));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -97,14 +90,28 @@ public class SocketTest {
         }
     }
 
-    public static void test() {
-        Socket socket1 = new Socket();
+    public static void acceptManyCustom2() throws IOException {
+        ServerSocket serverSock = new ServerSocket(8000);
+        while (true) {
+            java.net.Socket socket = serverSock.accept();
+            System.out.println("接受客户端socket");
+            new Thread(() -> {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String s = reader.readLine(); //此处堵塞，一但客户端发送一次数据，此处即可读取成功，且只读取一次，线程即被销毁，客户端再发送数据时，服务端已接受不到了
+                    System.out.println("接受客户端数据：" + s);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
     }
 
 
     public static void main(String[] args) throws IOException {
-//		acceptSingleCustom();
-//		acceptMutiplCustom();
-        acceptMutiplCustom1();
+//		acceptOneClient();
+//        acceptManyClient();
+        acceptManyCustom1();
+//        acceptManyCustom2();
     }
 }
